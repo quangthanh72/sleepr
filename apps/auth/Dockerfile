@@ -1,6 +1,6 @@
 FROM node:alpine As development
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
 COPY package*.json ./
 COPY pnpm-lock.yaml ./
@@ -20,12 +20,12 @@ FROM node:alpine as production
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
 COPY package*.json ./
 COPY pnpm-lock.yaml ./
 
-COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modules
+COPY --chown=node:node --from=development /app/node_modules ./node_modules
 
 RUN npm install -g pnpm
 
@@ -33,6 +33,6 @@ RUN pnpm fetch --prod
 
 RUN pnpm install --prod
 
-COPY --from=development /usr/src/app/dist ./dist
+COPY --from=development /app/dist ./dist
 
 CMD ["node", "dist/apps/auth/main.js"]
